@@ -1570,3 +1570,5 @@ MigrationBackup/
 .ionide/
 
 # End of https://www.toptal.com/developers/gitignore/api/osx,macos,windows,linux,python,go,ruby,node,vuejs,react,reactnative,vim,emacs,jetbrains+all,git,gitbook,visualstudiocode,visualstudio,virtualenv,microsoftoffice,django,flask,godot,eclipse,c++,c,julia,jupyternotebooks,commonlisp
+
+./loginInfo

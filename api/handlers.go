@@ -1,25 +1,15 @@
 package api
 
 import (
-	"encoding/json"
 	"github.com/pignuante/go-todoList/db"
 	"github.com/pignuante/go-todoList/todo"
-	"log"
 	"net/http"
 )
 
-//func getTodoLists(w http.ResponseWriter, r *http.Request) {
-//	lists, err := db.GetTodoLists()
-//	if err != nil {
-//		panic(internalError)
-//	}
-//	json.NewEncoder(w).Encode(lists)
-//}
-
-func writeInternalError(w http.ResponseWriter, err error) {
-	log.Println("internal error", err)
-	w.WriteHeader(http.StatusInternalServerError)
-	json.NewEncoder(w).Encode(errorResponse{"Internal Error"})
+func getTodoLists(w http.ResponseWriter, r *http.Request) {
+	lists, err := db.GetTodoLists()
+	must(err)
+	writeJSON(w, lists)
 }
 
 func createTodoList(w http.ResponseWriter, r *http.Request) {
@@ -29,6 +19,14 @@ func createTodoList(w http.ResponseWriter, r *http.Request) {
 	must(err)
 	writeJSON(w, todoList)
 }
+
+func getTodoList(w http.ResponseWriter, r *http.Request) {
+	listID := parseIntParam(r, "list_id")
+	list, err := db.GetTodoList(listID)
+	must(err)
+	writeJSON(w, list)
+}
+
 func modifyTodoList(w http.ResponseWriter, r *http.Request) {
 	listID := parseIntParam(r, "list_id")
 	var req todo.List
@@ -52,8 +50,7 @@ func createTodoItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func modifyTodoItem(w http.ResponseWriter, r *http.Request) {
-	listID := parseIntParam(r, "list_id")
-	itemID := parseIntParam(r, "item_id")
+	listID, itemID := parseIntParam(r, "list_id"), parseIntParam(r, "item_id")
 	var req todo.Item
 	parseJSON(r.Body, &req)
 	must(db.ModifyTodoItem(listID, itemID, req.Text, req.Done))

@@ -11,23 +11,13 @@ import (
 )
 
 func must(err error) {
-	if err != nil {
-		log.Println("internal error", err)
+	if err == db.ErrNotFound {
+		log.Println("not found:", err)
+		panic(notFoundError)
+	} else if err != nil {
+		log.Println("internal error:", err)
 		panic(internalError)
 	}
-}
-
-func getTodoLists(w http.ResponseWriter, r *http.Request) {
-	lists, err := db.GetTodoLists()
-	must(err)
-	writeJSON(w, lists)
-}
-
-func getTodoList(w http.ResponseWriter, r *http.Request) {
-	listID := parseIntParam(r, "list_id")
-	list, err := db.GetTodoList(listID)
-	must(err)
-	writeJSON(w, list)
 }
 
 func writeJSON(w http.ResponseWriter, v interface{}) {
@@ -37,7 +27,7 @@ func writeJSON(w http.ResponseWriter, v interface{}) {
 
 func parseJSON(r io.Reader, v interface{}) {
 	if err := json.NewDecoder(r).Decode(v); err != nil {
-		log.Println("parsing json body", err)
+		log.Println("parsing json body:", err)
 		panic(malformedInputError)
 	}
 }
